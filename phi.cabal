@@ -32,8 +32,10 @@ library
       ParseApp
       ParseCommon
       ParseDefinition
+      ParseError
       ParseExpr
       Parser
+      ParseTypes
       ProcessCode
       Substitution
       Tokenize

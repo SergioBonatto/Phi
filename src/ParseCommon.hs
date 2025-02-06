@@ -1,37 +1,40 @@
 module ParseCommon (parseExpr) where
 
 import Expression (Expression(..))
+import ParseError (ParseError(..))
+import ParseTypes (ParserResult, ExprParser)
 
-parseExpr :: [String] -> (Expression, [String])
-parseExpr [] = error "Unexpected end of expression"
+parseExpr :: ExprParser
+parseExpr [] = Left UnexpectedEndOfInput
 parseExpr (tok:toks)
     | tok == "λ" = parseLambda toks
     | tok == "(" = parseParenExpr toks
-    | tok == ")" || tok == "." || tok == "=" = error ("Unexpected token: " ++ tok)
-    | otherwise = (Var tok, toks)
+    | tok == ")" || tok == "." || tok == "=" =
+        Left $ UnexpectedToken tok
+    | otherwise = Right (Var tok, toks)
 
-parseLambda :: [String] -> (Expression, [String])
-parseLambda (var:".":rest) =
-    let (body, remainingTokens) = parseExpr rest
-    in (Lam var body, remainingTokens)
-parseLambda _ = error "Invalid syntax for lambda expression"
+parseLambda :: ExprParser
+parseLambda (var:".":rest) = do
+    (body, remainingTokens) <- parseExpr rest
+    Right (Lam var body, remainingTokens)
+parseLambda _ = Left InvalidLambdaSyntax
 
-parseParenExpr :: [String] -> (Expression, [String])
-parseParenExpr toks =
-    let (appExpr, remainingTokens) = parseApp toks
-    in case remainingTokens of
-         [] -> error "Unclosed parenthesis"
-         (")":rest) -> (appExpr, rest)
-         _ -> error "Unclosed parenthesis"
+parseParenExpr :: ExprParser
+parseParenExpr toks = do
+    (appExpr, remainingTokens) <- parseApp toks
+    case remainingTokens of
+        [] -> Left UnclosedParenthesis
+        (")":rest) -> Right (appExpr, rest)
+        _ -> Left UnclosedParenthesis
 
-parseApp :: [String] -> (Expression, [String])
-parseApp tokens =
-    let (firstExpr, remainingTokens) = parseExpr tokens
-    in parseApp' firstExpr remainingTokens
+parseApp :: ExprParser
+parseApp tokens = do
+    (firstExpr, remainingTokens) <- parseExpr tokens
+    buildApplication firstExpr remainingTokens
 
-parseApp' :: Expression -> [String] -> (Expression, [String])
-parseApp' expr [] = (expr, [])
-parseApp' expr (")":ts) = (expr, (")":ts))
-parseApp' expr ts =
-    let (nextExpr, remainingTokens) = parseExpr ts
-    in parseApp' (App expr nextExpr) remainingTokens
+buildApplication :: Expression -> [String] -> ParserResult
+buildApplication expr [] = Right (expr, [])
+buildApplication expr (")":ts) = Right (expr, (")":ts))
+buildApplication expr ts = do
+    (nextExpr, remainingTokens) <- parseExpr ts
+    buildApplication (App expr nextExpr) remainingTokens
