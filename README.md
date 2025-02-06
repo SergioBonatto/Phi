@@ -76,15 +76,21 @@ Options:
 
 ```sh
 $ cat > example.phi
-let compose = λf. λg. λx. f (g x)
-let id = λx. x
-compose id id 42
+let true  = λt.λf.t
+let false = λt.λf.f
+let neg   = λb. (b false true)
+
+let cons = λh.λt.λc.λn. (c h (t c n))
+let nil  =       λc.λn.n
+
+
+(neg true)
 
 $ phi-exe example.phi -s
-=> 42
+=> λt. λf. f
 ------------------
-Steps: 4
-Time: 0.000123s
+Steps: 6
+Time: 0.000695s
 ```
 
 ## Architecture
