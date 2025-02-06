@@ -19,7 +19,14 @@ Phi is a lightweight interpreter for pure lambda calculus, implemented in Haskel
 ### Quick Install
 
 ```sh
-stack install phi --git https://github.com/sergiobonatto/phi.git
+# Clone the repository
+git clone https://github.com/sergiobonatto/phi.git
+
+# Enter the directory
+cd phi
+
+# Build and install
+stack install
 ```
 
 ## Usage
@@ -39,6 +46,23 @@ let succ = λn. λf. λx. f (n f x)
 ```
 
 ### Command Line Interface
+
+There are two ways to use the phi interpreter:
+
+1. Using Stack directly:
+The basic method that works immediately after installation.
+```sh
+stack exec phi -- <file> [-s] [-c]
+```
+2. Using the phi command:
+If you've added `~/.local/bin` to your PATH, you can use the simpler command format.
+
+```sh
+phi <file> [-s] [-c]
+```
+Options available for both methods:
+  `-s`    Display execution statistics (reduction steps and time)
+  `-c`    Show final environment state
 
 ```sh
 phi [OPTIONS] <input-file>
