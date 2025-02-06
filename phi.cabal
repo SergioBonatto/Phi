@@ -35,6 +35,7 @@ library
       ParseExpr
       Parser
       ProcessCode
+      Substitution
       Tokenize
   other-modules:
       Paths_phi
