@@ -95,25 +95,38 @@ Time: 0.000695s
 
 ## Architecture
 
-The interpreter follows a classic compiler pipeline:
+The interpreter follows a modular compiler pipeline with clear separation of concerns:
 
-1. **Lexical Analysis** ([Tokenize.hs](src/Tokenize.hs))
-   - Converts raw text into tokens
-   - Handles lambda syntax (λ), parentheses, and identifiers
+1. **Lexical Analysis** ([`Tokenize.hs`](src/Tokenize.hs))
+   - Converts raw text into token streams
+   - Handles lambda syntax (λ), parentheses, identifiers
+   - Filters out whitespace and comments
 
-2. **Parsing** ([Parser.hs](src/Parser.hs))
-   - Implements recursive descent parsing
-   - Builds AST with proper precedence rules
-   - Handles let-bindings and expressions
+2. **Parsing Pipeline**
+   - [`Parser.hs`](src/Parser.hs): Main parser orchestrator
+   - [`ParseCommon.hs`](src/ParseCommon.hs): Core parsing primitives
+   - [`ParseExpr.hs`](src/ParseExpr.hs): Expression parsing
+   - [`ParseApp.hs`](src/ParseApp.hs): Function application parsing
+   - [`ParseDefinition.hs`](src/ParseDefinition.hs): Let-binding parsing
+   - [`ParseTypes.hs`](src/ParseTypes.hs): Parser type definitions
+   - [`ParseError.hs`](src/ParseError.hs): Error handling types
 
-3. **Evaluation** ([Evaluator.hs](src/Evaluator.hs))
-   - Performs β-reduction
-   - Manages variable substitution
-   - Implements call-by-name evaluation
+3. **Semantic Analysis**
+   - [`Expression.hs`](src/Expression.hs): AST data structures
+   - [`ProcessCode.hs`](src/ProcessCode.hs): Code processing and validation
 
-4. **Environment Management** ([Environment.hs](src/Environment.hs))
-   - Tracks variable bindings
-   - Handles lexical scoping
+4. **Evaluation Engine**
+   - [`Evaluator.hs`](src/Evaluator.hs): Core evaluation logic
+   - [`Substitution.hs`](src/Substitution.hs): Variable substitution
+   - Implements call-by-name evaluation strategy
+   - Handles β-reduction with configurable step limits
+
+5. **Environment Management** ([`Environment.hs`](src/Environment.hs))
+   - Manages variable bindings and scope
+   - Provides symbol table functionality
+   - Tracks definition dependencies
+
+The modular design allows for easy extension and modification of individual components while maintaining clean interfaces between stages.
 
 ## Contributing
 
@@ -137,6 +150,6 @@ BSD-3-Clause License.
 ## Further Reading
 
 
-- [Introduction to Lambda Calculus](https://www.cs.cornell.edu/courses/cs3110/2014sp/recitations/25/lambda-calculus.html)  
-- [Implementing a Lambda Calculus Evaluator in Haskell](https://stackoverflow.com/questions/tagged/lambda-calculus+haskell)  
-- [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)  
+- [Introduction to Lambda Calculus](https://www.cs.cornell.edu/courses/cs3110/2014sp/recitations/25/lambda-calculus.html)
+- [Implementing a Lambda Calculus Evaluator in Haskell](https://stackoverflow.com/questions/tagged/lambda-calculus+haskell)
+- [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)
