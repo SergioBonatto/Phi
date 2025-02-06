@@ -10,10 +10,6 @@ import Evaluator (evaluate)
 import Parser (processCode)
 import Text.Printf (printf)
 
--- Removidas as importações redundantes:
--- import ParseError (ParseError)
--- import Expression (Expression)
-
 main :: IO ()
 main = do
     args <- getArgs
