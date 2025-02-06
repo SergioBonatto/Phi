@@ -134,14 +134,11 @@ Please see CONTRIBUTING.md for guidelines.
 
 ## License
 
-BSD-3-Clause License. See
-
-LICENSE
-
- for details.
+BSD-3-Clause License.
 
 ## Further Reading
 
-- [Introduction to Lambda Calculus](https://www.cs.cornell.edu/courses/cs3110/2008fa/lecturenotes/L02-lambda-calculus.pdf)
-- [Implementing a Lambda Calculus Evaluator in Haskell](https://stackoverflow.com/questions/tagged/lambda-calculus+haskell)
-- [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/publication/the-implementation-of-functional-programming-languages/)
+
+- [Introduction to Lambda Calculus](https://www.cs.cornell.edu/courses/cs3110/2014sp/recitations/25/lambda-calculus.html)  
+- [Implementing a Lambda Calculus Evaluator in Haskell](https://stackoverflow.com/questions/tagged/lambda-calculus+haskell)  
+- [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)  
