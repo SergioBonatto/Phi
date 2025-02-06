@@ -2,21 +2,12 @@ module Evaluator (evaluate) where
 
 import Expression (Expression(..))
 import Environment (Env)
+import Substitution (substitute)
 import qualified Data.Map as Map
 import Data.Set (Set)
 
-substitute :: Expression -> String -> Expression -> Expression
-substitute (Var x) var val
-    | x == var  = val
-    | otherwise = Var x
-substitute (Lam x body) var val
-    | x == var  = Lam x body
-    | otherwise = Lam x (substitute body var val)
-substitute (App f a) var val =
-    App (substitute f var val) (substitute a var val)
-
 evaluate :: Expression -> Env -> Set String -> Int -> (Expression, Int)
-evaluate expr env usedDefs maxSteps = go expr 0
+evaluate expr env _usedDefs maxSteps = go expr 0
   where
     go e steps
       | steps >= maxSteps = error "Maximum number of reduction steps exceeded"

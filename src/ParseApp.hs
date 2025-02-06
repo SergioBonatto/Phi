@@ -1,16 +1,17 @@
-module ParseApp (parseApp) where
+module ParseApp (parseParenApplication) where
 
 import Expression (Expression(..))
 import ParseCommon (parseExpr)
+import ParseTypes (ParserResult)
 
-parseApp :: [String] -> (Expression, [String])
-parseApp tokens =
-    let (firstExpr, remainingTokens) = parseExpr tokens
-    in parseApp' firstExpr remainingTokens
+parseParenApplication :: [String] -> ParserResult
+parseParenApplication tokens = do
+    (firstExpr, remainingTokens) <- parseExpr tokens
+    buildApplication firstExpr remainingTokens
 
-parseApp' :: Expression -> [String] -> (Expression, [String])
-parseApp' expr [] = (expr, [])
-parseApp' expr (")":ts) = (expr, (")":ts))
-parseApp' expr ts =
-    let (nextExpr, remainingTokens) = parseExpr ts
-    in parseApp' (App expr nextExpr) remainingTokens
+buildApplication :: Expression -> [String] -> ParserResult
+buildApplication expr [] = Right (expr, [])
+buildApplication expr (")":ts) = Right (expr, (")":ts))
+buildApplication expr ts = do
+    (nextExpr, remainingTokens) <- parseExpr ts
+    buildApplication (App expr nextExpr) remainingTokens

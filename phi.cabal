@@ -32,9 +32,12 @@ library
       ParseApp
       ParseCommon
       ParseDefinition
+      ParseError
       ParseExpr
       Parser
+      ParseTypes
       ProcessCode
+      Substitution
       Tokenize
   other-modules:
       Paths_phi
