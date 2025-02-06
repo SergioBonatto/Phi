@@ -124,8 +124,6 @@ Contributions are welcome! Areas of particular interest:
 - Adding type inference
 - Improving performance for complex reductions
 
-Please see CONTRIBUTING.md for guidelines.
-
 ## Performance Notes
 
 - The interpreter uses lazy evaluation by default
