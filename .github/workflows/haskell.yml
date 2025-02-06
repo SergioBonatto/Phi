@@ -1,0 +1,51 @@
+name: Haskell CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Stack
+      uses: haskell-actions/setup@v2
+      with:
+        ghc-version: '9.8.4'
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Cache Stack
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.stack
+          .stack-work
+        key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml.lock', 'package.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-
+
+    - name: Install dependencies
+      run: stack setup && stack build --only-dependencies
+
+    - name: Build
+      run: stack build --test --no-run-tests
+
+    - name: Run tests
+      run: stack test
+
+    - name: Run HLint
+      uses: haskell-actions/hlint-setup@v2
+      with:
+        version: '3.8'
+
+    - name: Check code style
+      run: hlint src/ app/ test/
