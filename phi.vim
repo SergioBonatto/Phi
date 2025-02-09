@@ -19,8 +19,8 @@ syntax keyword phiKeyword let
 syntax match phiSpecialChar '[()=]'
 
 " Comments
-syntax match phiCommentLine '--.*$'
-syntax region phiCommentBlock start='{-' end='-}'
+syntax match phiCommentLine "--.*$"
+syntax region phiCommentBlock start="{-" end="-}"
 
 " Strings
 syntax region phiString start='"' end='"' contains=phiStringEscape
