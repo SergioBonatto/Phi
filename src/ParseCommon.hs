@@ -34,7 +34,7 @@ parseApp tokens = do
 
 buildApplication :: Expression -> [String] -> ParserResult
 buildApplication expr [] = Right (expr, [])
-buildApplication expr (")":ts) = Right (expr, (")":ts))
+buildApplication expr (")":ts) = Right (expr, ")":ts)
 buildApplication expr ts = do
     (nextExpr, remainingTokens) <- parseExpr ts
     buildApplication (App expr nextExpr) remainingTokens
