@@ -29,7 +29,6 @@ library
       Evaluator
       Expression
       Main
-      ParseApp
       ParseCommon
       ParseDefinition
       ParseError
