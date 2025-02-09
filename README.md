@@ -1,13 +1,13 @@
 # Phi - A Lambda Calculus Interpreter
 
-Phi is a lightweight interpreter for pure lambda calculus, implemented in Haskell. It provides a simple yet powerful environment for experimenting with lambda calculus expressions and understanding the fundamentals of functional computation.
+Phi is a lightweight interpreter for pure lambda calculus, implemented in Haskell. It provides a simple yet powerful environment for experimenting with lambda calculus expressions.
 
 ## Key Features
 
 - **Pure Lambda Calculus Support**: Implements β-reduction and variable substitution
 - **Lazy Evaluation**: Uses Haskell's natural lazy evaluation strategy
 - **Robust Parser**: Handles nested expressions and complex lambda terms
-- **Configurable Output**: Detailed execution traces and environment inspection
+- **Comment Support**: Handles both single-line (`--`) and multi-line (`{- -}`) comments
 - **Maximum Step Limit**: Prevents infinite recursion with configurable step limits
 
 ## Installation
@@ -16,16 +16,17 @@ Phi is a lightweight interpreter for pure lambda calculus, implemented in Haskel
 
 - [Stack](https://docs.haskellstack.org/en/stable/README/) build tool
 
-### Quick Install
+### Building
 
 ```sh
 # Clone the repository
 git clone https://github.com/sergiobonatto/phi.git
-
-# Enter the directory
 cd phi
 
-# Build and install
+# Build the project
+stack build
+
+# install the project
 stack install
 ```
 
@@ -34,122 +35,67 @@ stack install
 ### Basic Syntax
 
 ```haskell
-# Identity function
-let id = λx. x
+-- Single line comments start with --
+{- Multi-line comments
+   use {- and -} -}
 
-# Function application
-let apply = λf. λx. f x
+-- Basic boolean operations
+let true  = λt.λf.t
+let false = λt.λf.f
+let neg   = λb. (b false true)
 
-# Church numerals
-let zero = λf. λx. x
-let succ = λn. λf. λx. f (n f x)
+-- List implementation using Scott encoding
+let cons = λh.λt.λc.λn. (c h (t c n))
+let nil  = λc.λn.n
 ```
 
 ### Command Line Interface
 
-There are two ways to use the phi interpreter:
-
-1. Using Stack directly:
-The basic method that works immediately after installation.
 ```sh
 stack exec phi -- <file> [-s] [-c]
-```
-2. Using the phi command:
-If you've added `~/.local/bin` to your PATH, you can use the simpler command format.
-
-```sh
-phi <file> [-s] [-c]
-```
-Options available for both methods:
-  `-s`    Display execution statistics (reduction steps and time)
-  `-c`    Show final environment state
-
-```sh
-phi [OPTIONS] <input-file>
 
 Options:
   -s    Display execution statistics (reduction steps and time)
   -c    Show final environment state
 ```
 
-### Example Session
+# Project Structure
+
+The interpreter follows a modular design with clear separation of concerns:
+
+## 1. Core Components
+- [`Expression.hs`](src/Expression.hs): Core lambda calculus expression types and data structures
+- [`Environment.hs`](src/Environment.hs): Environment management and variable bindings
+- [`Evaluator.hs`](src/Evaluator.hs): Expression evaluation and reduction strategies
+- [`Substitution.hs`](src/Substitution.hs): Variable substitution and β-reduction implementation
+
+## 2. Parsing Pipeline
+- [`Tokenize.hs`](src/Tokenize.hs): Lexical analysis and token generation
+- [`Parser.hs`](src/Parser.hs): Main parsing orchestration and integration
+- [`ParseCommon.hs`](src/ParseCommon.hs): Shared parsing utilities and helpers
+- [`ParseExpr.hs`](src/ParseExpr.hs): Lambda expression parsing logic
+- [`ParseApp.hs`](src/ParseApp.hs): Function application parsing
+- [`ParseDefinition.hs`](src/ParseDefinition.hs): Let-binding and definition parsing
+- [`ParseError.hs`](src/ParseError.hs): Comprehensive error handling types and messages
+
+## 3. Processing
+- [`ProcessCode.hs`](src/ProcessCode.hs): Source code processing and evaluation pipeline
+- [`ParseTypes.hs`](src/ParseTypes.hs): Core parsing types and data structures
+
+## Testing
+
+The project includes a test suite covering the main components:
 
 ```sh
-$ cat > example.phi
-let true  = λt.λf.t
-let false = λt.λf.f
-let neg   = λb. (b false true)
-
-let cons = λh.λt.λc.λn. (c h (t c n))
-let nil  =       λc.λn.n
-
-
-(neg true)
-
-$ phi-exe example.phi -s
-=> λt. λf. f
-------------------
-Steps: 6
-Time: 0.000695s
+stack test
 ```
 
-## Architecture
-
-The interpreter follows a modular compiler pipeline with clear separation of concerns:
-
-1. **Lexical Analysis** ([`Tokenize.hs`](src/Tokenize.hs))
-   - Converts raw text into token streams
-   - Handles lambda syntax (λ), parentheses, identifiers
-   - Filters out whitespace and comments
-
-2. **Parsing Pipeline**
-   - [`Parser.hs`](src/Parser.hs): Main parser orchestrator
-   - [`ParseCommon.hs`](src/ParseCommon.hs): Core parsing primitives
-   - [`ParseExpr.hs`](src/ParseExpr.hs): Expression parsing
-   - [`ParseApp.hs`](src/ParseApp.hs): Function application parsing
-   - [`ParseDefinition.hs`](src/ParseDefinition.hs): Let-binding parsing
-   - [`ParseTypes.hs`](src/ParseTypes.hs): Parser type definitions
-   - [`ParseError.hs`](src/ParseError.hs): Error handling types
-
-3. **Semantic Analysis**
-   - [`Expression.hs`](src/Expression.hs): AST data structures
-   - [`ProcessCode.hs`](src/ProcessCode.hs): Code processing and validation
-
-4. **Evaluation Engine**
-   - [`Evaluator.hs`](src/Evaluator.hs): Core evaluation logic
-   - [`Substitution.hs`](src/Substitution.hs): Variable substitution
-   - Implements call-by-name evaluation strategy
-   - Handles β-reduction with configurable step limits
-
-5. **Environment Management** ([`Environment.hs`](src/Environment.hs))
-   - Manages variable bindings and scope
-   - Provides symbol table functionality
-   - Tracks definition dependencies
-
-The modular design allows for easy extension and modification of individual components while maintaining clean interfaces between stages.
-
-## Contributing
-
-Contributions are welcome! Areas of particular interest:
-
-- Adding alpha-conversion to handle name conflicts
-- Implementing Church encoding for basic data types
-- Adding type inference
-- Improving performance for complex reductions
-
-## Performance Notes
-
-- The interpreter uses lazy evaluation by default
-- Maximum reduction steps can be configured to prevent infinite loops
-- Complex expressions may require increasing the step limit with `-s` flag
+Tests include:
+- Tokenization
+- Expression parsing
+- Definition processing
+- Evaluation logic
 
 ## License
 
 BSD-3-Clause License.
-
-## Further Reading
-
-
-- [Introduction to Lambda Calculus](https://www.cs.cornell.edu/courses/cs3110/2014sp/recitations/25/lambda-calculus.html)
-- [Implementing a Lambda Calculus Evaluator in Haskell](https://stackoverflow.com/questions/tagged/lambda-calculus+haskell)
-- [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)

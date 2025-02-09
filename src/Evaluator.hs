@@ -24,6 +24,6 @@ evaluate expr env _usedDefs maxSteps = go expr 0
                   let newExpr = substitute body x a
                   in go newExpr (s1+1)
                 _ ->
-                  let (a', s2) = go a (s1)
+                  let (a', s2) = go a s1
                   in (App f' a', s2)
             _ -> (e, steps)
