@@ -1,11 +1,11 @@
 module Parser (
     tokenize,
-    parseExpr,
-    parseDefinition,
+    expr,
+    definition,
     processCode
 ) where
 
 import Tokenize (tokenize)
-import ParseCommon (parseExpr)
-import ParseDefinition (parseDefinition)
+import Common (expr)
+import Definition (definition)
 import ProcessCode (processCode)

@@ -1,7 +1,7 @@
-module ParseParenExpr (ParenExprParser(..)) where
+module ParenExpr (ParenExprParser(..)) where
 
-import ParseTypes (Parser(..), ParseError(..))
-import ParseApp (AppParser(..))
+import Types (Parser(..), Error(..))
+import App (AppParser(..))
 
 data ParenExprParser = ParenExprParser
 

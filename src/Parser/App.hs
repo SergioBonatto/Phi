@@ -1,8 +1,8 @@
-module ParseApp (AppParser(..)) where
+module App (AppParser(..)) where
 
 import Expression (Expression(..))
-import ParseTypes (ParserResult, Parser(..), ParseError(..))
-import ParseVar (VarParser(..))
+import Types (Result, Parser(..), Error(..))
+import Var (VarParser(..))
 
 data AppParser = AppParser
 
@@ -13,7 +13,7 @@ instance Parser AppParser where
             (firstExpr, remainingTokens) <- parse VarParser tokens
             buildApplication firstExpr remainingTokens
 
-buildApplication :: Expression -> [String] -> ParserResult
+buildApplication :: Expression -> [String] -> Result
 buildApplication acc [] = Right (acc, [])
 buildApplication acc (")":rest) = Right (acc, ")":rest)
 buildApplication acc tokens = do

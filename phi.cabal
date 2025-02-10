@@ -30,18 +30,18 @@ library
       Evaluator
       Expression
       Substitution
-      ParseApp
-      ParseCombinators
-      ParseCommon
-      ParseDefinition
-      ParseError
-      ParseExpr
-      ParseLambda
-      ParseParenExpr
+      App
+      Combinators
+      Common
+      Definition
+      Error
+      Expr
+      Lambda
+      ParenExpr
       Parser
-      ParseTypes
-      ParseVar
       Tokenize
+      Types
+      Var
       ProcessCode
       ProcessLine
       ProcessSingleLine
@@ -53,7 +53,6 @@ library
   hs-source-dirs:
       src/Core
       src/Parser
-      src/Main
       src/Processing
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:

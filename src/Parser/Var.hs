@@ -1,7 +1,7 @@
-module ParseVar (VarParser(..)) where
+module Var (VarParser(..)) where
 
 import Expression (Expression(..))
-import ParseTypes (Parser(..), ParseError(..))
+import Types (Parser(..), Error(..))
 
 data VarParser = VarParser
 

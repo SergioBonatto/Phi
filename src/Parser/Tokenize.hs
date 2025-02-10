@@ -4,8 +4,8 @@ import Data.Char (isAlphaNum)
 
 tokenize :: String -> [String]
 tokenize [] = []
-tokenize ('-':'-':rest) = tokenize $ dropWhile (/= '\n') rest  -- single line comment
-tokenize ('{':'-':rest) = tokenize $ skipMultiLineComment rest -- multi-line comment
+tokenize ('-':'-':rest) = tokenize $ dropWhile (/= '\n') rest
+tokenize ('{':'-':rest) = tokenize $ skipMultiLineComment rest
 tokenize (c:cs)
     | c `elem` ("λ().=" :: [Char]) = [c] : tokenize cs
     | c == ' ' || c == '\t' || c == '\n' = tokenize cs

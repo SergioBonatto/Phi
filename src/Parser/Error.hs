@@ -1,6 +1,6 @@
-module ParseError (ParseError(..)) where
+module Error (Error(..)) where
 
-data ParseError
+data Error
     = UnexpectedEndOfInput
     | UnexpectedToken String
     | UnclosedParenthesis

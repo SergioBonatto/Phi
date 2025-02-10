@@ -40,7 +40,6 @@ library:
   source-dirs:
     - src/Core
     - src/Parser
-    - src/Main
     - src/Processing
 
 executables:

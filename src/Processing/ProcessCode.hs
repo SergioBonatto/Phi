@@ -3,11 +3,11 @@ module ProcessCode (processCode) where
 import Expression (Expression)
 import Environment (Env)
 import qualified Data.Map as Map
-import ParseError (ParseError(..))
+import Error (Error(..))
 import StripLine (stripLine)
 import ProcessLine (processLine)
 
-processCode :: String -> Either ParseError (Expression, Env)
+processCode :: String -> Either Error (Expression, Env)
 processCode code =
     let nonEmptyLines = filter (not . null . words) $ map stripLine $ lines code
         initState = Right (undefined, Map.empty, Nothing)
