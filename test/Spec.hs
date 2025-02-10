@@ -1,7 +1,7 @@
 import Test.HUnit
 import Expression (Expression(..))
 import Tokenize (tokenize)
-import Parser (parseExpr, processCode)
+import Parser (expr, processCode)
 import Evaluator (evaluate)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -38,25 +38,25 @@ tokenizationTests = TestList [
 parsingTests :: Test
 parsingTests = TestList [
     "Parse variable" ~:
-        case parseExpr ["x"] of
+        case expr ["x"] of
             Right (Var "x", []) -> True
             _ -> False
         ~?= True,
 
     "Parse lambda" ~:
-        case parseExpr ["λ", "x", ".", "x"] of
+        case expr ["λ", "x", ".", "x"] of
             Right (Lam "x" (Var "x"), []) -> True
             _ -> False
         ~?= True,
 
     "Parse application" ~:
-        case parseExpr ["(", "f", "x", ")"] of
+        case expr ["(", "f", "x", ")"] of
             Right (App (Var "f") (Var "x"), []) -> True
             _ -> False
         ~?= True,
 
     "Parse nested lambda" ~:
-        case parseExpr ["λ", "x", ".", "λ", "y", ".", "x"] of
+        case expr ["λ", "x", ".", "λ", "y", ".", "x"] of
             Right (Lam "x" (Lam "y" (Var "x")), []) -> True
             _ -> False
         ~?= True
@@ -65,31 +65,31 @@ parsingTests = TestList [
 evaluationTests :: Test
 evaluationTests = TestList [
     "Identity function" ~:
-        let expr = App (Lam "x" (Var "x")) (Var "y")
+        let testExpr = App (Lam "x" (Var "x")) (Var "y")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate expr env usedDefs 1000
+            (result, _) = evaluate testExpr env usedDefs 1000
         in result ~?= Var "y",
 
     "Basic substitution" ~:
-        let expr = App (Lam "x" (App (Var "x") (Var "x"))) (Var "y")
+        let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Var "y")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate expr env usedDefs 1000
+            (result, _) = evaluate testExpr env usedDefs 1000
         in result ~?= App (Var "y") (Var "y"),
 
     "Multiple beta reduction" ~:
-        let expr = App (App (Lam "x" (Lam "y" (Var "x"))) (Var "a")) (Var "b")
+        let testExpr = App (App (Lam "x" (Lam "y" (Var "x"))) (Var "a")) (Var "b")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate expr env usedDefs 1000
+            (result, _) = evaluate testExpr env usedDefs 1000
         in result ~?= Var "a",
 
     "Nested lambda evaluation" ~:
-        let expr = App (Lam "x" (Lam "y" (App (Var "x") (Var "y")))) (Var "z")
+        let testExpr = App (Lam "x" (Lam "y" (App (Var "x") (Var "y")))) (Var "z")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate expr env usedDefs 1000
+            (result, _) = evaluate testExpr env usedDefs 1000
         in result ~?= Lam "y" (App (Var "z") (Var "y"))
   ]
 
@@ -111,8 +111,11 @@ definitionTests = TestList [
 
     "Definition with application" ~:
         case processCode "let apply = λf. λx. (f x)\nlet id = λx. x\n(apply id y)" of
-            Right (App (Var "id") (Var "y"), env) ->
-                Map.size env == 2
+            Right (parsedExpr, env) ->
+                let (result, _) = evaluate parsedExpr env Set.empty 1000
+                in result == Var "y" &&
+                   Map.lookup "apply" env == Just (Lam "f" (Lam "x" (App (Var "f") (Var "x")))) &&
+                   Map.lookup "id" env == Just (Lam "x" (Var "x"))
             _ -> False
         ~?= True
   ]
