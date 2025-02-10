@@ -37,6 +37,9 @@ library
       Parser
       ParseTypes
       ProcessCode
+      ProcessLine
+      ProcessSingleLine
+      StripLine
       Substitution
       Tokenize
   other-modules:
