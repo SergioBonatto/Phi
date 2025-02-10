@@ -8,11 +8,8 @@ import ParseCommon (parseExpr)
 import ParseError (ParseError(..))
 
 processSingleLine :: [String] -> Env -> Maybe Expression -> Either ParseError (Expression, Env, Maybe Expression)
-processSingleLine [] env lastExpr = case lastExpr of
-    Nothing -> Left EmptyExpression
-    Just e -> Right (e, env, Just e)
-processSingleLine tokens env lastExpr = case tokens of
-    [] -> Right (undefined, env, lastExpr)
+processSingleLine [] env lastExpr = Right (undefined, env, lastExpr)  -- linha vazia
+processSingleLine tokens env _ = case tokens of
     ("let":_) -> do
         (name, expr) <- parseDefinition tokens
         let env' = Map.insert name expr env

@@ -30,12 +30,17 @@ library
       Evaluator
       Expression
       Main
+      ParseApp
+      ParseCombinators
       ParseCommon
       ParseDefinition
       ParseError
       ParseExpr
+      ParseLambda
+      ParseParenExpr
       Parser
       ParseTypes
+      ParseVar
       ProcessCode
       ProcessLine
       ProcessSingleLine
