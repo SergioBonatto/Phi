@@ -29,7 +29,10 @@ tokenizationTests = TestList [
         tokenize "(f x)" ~?= ["(", "f", "x", ")"],
 
     "Let definition" ~:
-        tokenize "let id = λx. x" ~?= ["let", "id", "=", "λ", "x", ".", "x"]
+        tokenize "let id = λx. x" ~?= ["let", "id", "=", "λ", "x", ".", "x"],
+
+    "Nested expressions" ~:
+        tokenize "(λx. (λy. (x y)))" ~?= ["(", "λ", "x", ".", "(", "λ", "y", ".", "(", "x", "y", ")", ")", ")"]
   ]
 
 parsingTests :: Test
@@ -49,6 +52,12 @@ parsingTests = TestList [
     "Parse application" ~:
         case parseExpr ["(", "f", "x", ")"] of
             Right (App (Var "f") (Var "x"), []) -> True
+            _ -> False
+        ~?= True,
+
+    "Parse nested lambda" ~:
+        case parseExpr ["λ", "x", ".", "λ", "y", ".", "x"] of
+            Right (Lam "x" (Lam "y" (Var "x")), []) -> True
             _ -> False
         ~?= True
   ]
@@ -74,7 +83,14 @@ evaluationTests = TestList [
             env = Map.empty
             usedDefs = Set.empty
             (result, _) = evaluate expr env usedDefs 1000
-        in result ~?= Var "a"
+        in result ~?= Var "a",
+
+    "Nested lambda evaluation" ~:
+        let expr = App (Lam "x" (Lam "y" (App (Var "x") (Var "y")))) (Var "z")
+            env = Map.empty
+            usedDefs = Set.empty
+            (result, _) = evaluate expr env usedDefs 1000
+        in result ~?= Lam "y" (App (Var "z") (Var "y"))
   ]
 
 definitionTests :: Test
@@ -89,6 +105,13 @@ definitionTests = TestList [
     "Multiple definitions processing" ~:
         case processCode "let id = λx. x\nlet const = λx. λy. x" of
             Right (_, env) ->
+                Map.size env == 2
+            _ -> False
+        ~?= True,
+
+    "Definition with application" ~:
+        case processCode "let apply = λf. λx. (f x)\nlet id = λx. x\n(apply id y)" of
+            Right (App (Var "id") (Var "y"), env) ->
                 Map.size env == 2
             _ -> False
         ~?= True
