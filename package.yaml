@@ -37,7 +37,11 @@ ghc-options:
 - -Wredundant-constraints
 
 library:
-  source-dirs: src
+  source-dirs:
+    - src/Core
+    - src/Parser
+    - src/Main
+    - src/Processing
 
 executables:
   phi:

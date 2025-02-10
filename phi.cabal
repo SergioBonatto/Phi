@@ -29,7 +29,7 @@ library
       EvaluateStep
       Evaluator
       Expression
-      Main
+      Substitution
       ParseApp
       ParseCombinators
       ParseCommon
@@ -41,18 +41,20 @@ library
       Parser
       ParseTypes
       ParseVar
+      Tokenize
       ProcessCode
       ProcessLine
       ProcessSingleLine
       StripLine
-      Substitution
-      Tokenize
   other-modules:
       Paths_phi
   autogen-modules:
       Paths_phi
   hs-source-dirs:
-      src
+      src/Core
+      src/Parser
+      src/Main
+      src/Processing
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       HUnit
