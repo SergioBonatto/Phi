@@ -3,7 +3,7 @@ module Common (expr) where
 import Expression (Expression(..))
 import Error (Error(..))
 import Types (ExprParser, Parser(..))
-import App (AppParser(..))
+import ParenExpr (ParenExprParser(..))
 
 expr :: ExprParser
 expr [] = Left UnexpectedEndOfInput
@@ -21,9 +21,4 @@ lambda (var:".":rest) = do
 lambda _ = Left InvalidLambdaSyntax
 
 parenExpr :: ExprParser
-parenExpr toks = do
-    (appExpr, remainingTokens) <- parse AppParser toks
-    case remainingTokens of
-        [] -> Left UnclosedParenthesis
-        (")":rest) -> Right (appExpr, rest)
-        _ -> Left UnclosedParenthesis
+parenExpr = parse ParenExprParser
