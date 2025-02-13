@@ -19,16 +19,16 @@ main = do
            putStrLn "Usage: phi <file> [-s] [-c] [-d] [-t] [-m steps]"
            exitFailure
       (filePath:opts) -> do
-           let showStats   = "-s" `elem` opts
-               showContext = "-c" `elem` opts
-               debug      = "-d" `elem` opts
-               trace      = "-t" `elem` opts
-               maxSteps   = maybe 1000 read $ lookup "-m" $ zip opts (tail opts)
+           let showStats    = "-s" `elem` opts
+               showContext  = "-c" `elem` opts
+               showDebug   = "-d" `elem` opts
+               showTrace   = "-t" `elem` opts
+               stepLimit   = maybe 1000 read $ lookup "-m" $ zip opts (drop 1 opts)
 
            let config = InterpreterConfig {
-               maxSteps = maxSteps,
-               debug = debug,
-               tracing = trace
+               maxSteps = stepLimit,
+               debug    = showDebug,
+               tracing  = showTrace
            }
 
            code <- readFile filePath
@@ -53,7 +53,7 @@ main = do
                        printf "Execution time: %.6f seconds\n" elapsedTime
                        putStrLn $ "Number of reduction steps: " ++ show steps
 
-                   when trace $ do
+                   when showTrace $ do
                        putStrLn "=================================================="
                        putStrLn "Evaluation trace:"
                        mapM_ (\t -> printf "Step %d: %s\n" (step t) (show $ expr t)) traces
