@@ -9,7 +9,7 @@ import Control.Monad (when)
 import Evaluator (evaluate)
 import Parser (processCode)
 import Text.Printf (printf)
-import Types (InterpreterConfig(..), EvalTrace(..))  -- Adicionando EvalTrace(..)
+import Types (InterpreterConfig(..), EvalTrace(..))
 
 main :: IO ()
 main = do
