@@ -18,7 +18,7 @@ evaluateStep :: InterpreterConfig
              -> EvalResult
 evaluateStep config e env usedDefs steps memo traces
   | steps >= maxSteps config =
-      error "Maximum number of reduction steps exceeded"  -- Ou use Either Error
+      error "Maximum number of reduction steps exceeded"
   | otherwise = case e of
       Var x -> case Map.lookup x env of
         Just ex ->
