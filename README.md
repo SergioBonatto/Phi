@@ -57,21 +57,19 @@ stack install
 ### Expression Syntax
 
 ```haskell
--- Define basic boolean operations
+-- Basic boolean operations
 let true  = λt.λf.t          -- Returns first argument
 let false = λt.λf.f          -- Returns second argument
-let and   = λp.λq. p q false -- Logical AND
-let or    = λp.λq. p true q  -- Logical OR
 let not   = λb. b false true -- Logical NOT
 
--- Church numerals
-let zero  = λf.λx.x
-let succ  = λn.λf.λx.f (n f x)
-let add   = λm.λn.λf.λx.m f (n f x)
+-- Simple function application
+let id = λx.x
+let apply = λf.λx.(f x)
 
--- List operations (Scott encoding)
-let nil   = λc.λn.n
-let cons  = λh.λt.λc.λn. c h (t c n)
+-- Basic expressions
+(id true)      -- evaluates to true
+(not false)    -- evaluates to true
+(apply id x)   -- evaluates to x
 ```
 
 ### Advanced Command Line Interface
@@ -90,21 +88,17 @@ Options:
 ### Example Session
 
 ```sh
-$ cat examples/church.phi
-let zero = λf.λx.x
-let succ = λn.λf.λx.f (n f x)
-let two = succ (succ zero)
+$ cat examples/simple.phi
+let id = λx.x
+let not = λb. b false true
+(not false)
 
-(two)
-
-$ stack exec phi -- examples/church.phi -s
-=> λf.λx.f (f x)
+$ stack exec phi -- examples/simple.phi -s
+=> λt.λf.t
 ==================================================
 Execution time: 0.000123 seconds
-Number of reduction steps: 4
+Number of reduction steps: 3
 ```
-
-Coletando informações do workspaceHere's an improved version of the Project Architecture section:
 
 ## Project Architecture
 
