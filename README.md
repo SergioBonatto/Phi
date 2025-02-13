@@ -72,8 +72,6 @@ let add   = λm.λn.λf.λx.m f (n f x)
 -- List operations (Scott encoding)
 let nil   = λc.λn.n
 let cons  = λh.λt.λc.λn. c h (t c n)
-let head  = λl. l (λh.λt.h) undefined
-let tail  = λl. l (λh.λt.t) nil
 ```
 
 ### Advanced Command Line Interface
