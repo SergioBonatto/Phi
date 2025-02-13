@@ -6,4 +6,5 @@ data Error
     | UnclosedParenthesis
     | InvalidLambdaSyntax
     | EmptyExpression
+    | MaxStepsExceeded
     deriving (Show, Eq)

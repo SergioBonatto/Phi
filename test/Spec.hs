@@ -1,3 +1,5 @@
+module Main (main) where
+
 import Test.HUnit
 import Expression (Expression(..))
 import Tokenize (tokenize)
@@ -5,9 +7,17 @@ import Parser (expr, processCode)
 import Evaluator (evaluate)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
+import Types (InterpreterConfig(..))
 
 main :: IO ()
 main = runTestTTAndExit allTests
+
+testConfig :: InterpreterConfig
+testConfig = InterpreterConfig {
+    maxSteps = 1000,
+    debug = False,
+    tracing = False
+}
 
 allTests :: Test
 allTests = TestList [
@@ -68,28 +78,28 @@ evaluationTests = TestList [
         let testExpr = App (Lam "x" (Var "x")) (Var "y")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate testExpr env usedDefs 1000
+            (result, _, _) = evaluate testConfig testExpr env usedDefs
         in result ~?= Var "y",
 
     "Basic substitution" ~:
         let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Var "y")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate testExpr env usedDefs 1000
+            (result, _, _) = evaluate testConfig testExpr env usedDefs
         in result ~?= App (Var "y") (Var "y"),
 
     "Multiple beta reduction" ~:
         let testExpr = App (App (Lam "x" (Lam "y" (Var "x"))) (Var "a")) (Var "b")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate testExpr env usedDefs 1000
+            (result, _, _) = evaluate testConfig testExpr env usedDefs
         in result ~?= Var "a",
 
     "Nested lambda evaluation" ~:
         let testExpr = App (Lam "x" (Lam "y" (App (Var "x") (Var "y")))) (Var "z")
             env = Map.empty
             usedDefs = Set.empty
-            (result, _) = evaluate testExpr env usedDefs 1000
+            (result, _, _) = evaluate testConfig testExpr env usedDefs
         in result ~?= Lam "y" (App (Var "z") (Var "y"))
   ]
 
@@ -112,7 +122,7 @@ definitionTests = TestList [
     "Definition with application" ~:
         case processCode "let apply = λf. λx. (f x)\nlet id = λx. x\n(apply id y)" of
             Right (parsedExpr, env) ->
-                let (result, _) = evaluate parsedExpr env Set.empty 1000
+                let (result, _, _) = evaluate testConfig parsedExpr env Set.empty
                 in result == Var "y" &&
                    Map.lookup "apply" env == Just (Lam "f" (Lam "x" (App (Var "f") (Var "x")))) &&
                    Map.lookup "id" env == Just (Lam "x" (Var "x"))

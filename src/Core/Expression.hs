@@ -4,8 +4,7 @@ data Expression
     = Var String
     | Lam String Expression
     | App Expression Expression
-    deriving (Eq)
-
+    deriving (Eq, Ord)
 instance Show Expression where
     show (Var x)     = x
     show (Lam x e)   = "λ" ++ x ++ ". " ++ show e
