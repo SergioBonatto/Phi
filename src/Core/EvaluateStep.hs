@@ -19,7 +19,6 @@ evaluateStep :: InterpreterConfig
 evaluateStep config e env usedDefs steps memo traces
     | steps >= maxSteps config = error "Maximum number of reduction steps exceeded"
     | otherwise = case e of
-        -- Caso para variáveis
         Var x -> case Map.lookup x env of
             Just ex ->
                 let trace = EvalTrace {
@@ -33,7 +32,6 @@ evaluateStep config e env usedDefs steps memo traces
                 in (result, s, ts, m)
             Nothing -> (e, steps, traces, memo)
 
-        -- Caso para aplicações
         App e1 e2 ->
             let (e1', s1, t1, m1) = evaluateStep config e1 env usedDefs steps memo traces
             in case e1' of
@@ -51,7 +49,6 @@ evaluateStep config e env usedDefs steps memo traces
                     let (e2', s2, t2, m2) = evaluateStep config e2 env usedDefs s1 m1 t1
                     in (App e1' e2', s2, t2, m2)
 
-        -- Caso para lambda
         Lam x body ->
             let (body', s, t, m) = evaluateStep config body env usedDefs steps memo traces
             in (Lam x body', s, t, m)

@@ -29,8 +29,8 @@ main = do
                maxSteps = stepLimit,
                debug = showDebug,
                tracing = showTrace,
-               extensions = Set.empty,    -- Adicionado campo extensions
-               memoization = False        -- Adicionado campo memoization
+               extensions = Set.empty,
+               memoization = False
            }
 
            code <- readFile filePath

@@ -3,7 +3,7 @@ module ProcessCode (processCode) where
 import Expression (Expression)
 import Environment (Env)
 import qualified Data.Map as Map
-import Error (Error(..), ParserError(..))  -- Adicionar ParserError
+import Error (Error(..), ParserError(..))
 import StripLine (stripLine)
 import ProcessLine (processLine)
 
@@ -15,4 +15,4 @@ processCode code =
     in case result of
         Left err -> Left err
         Right (_, env, Just lastExpr) -> Right (lastExpr, env)
-        Right (_, _, Nothing) -> Left $ ParserError EmptyExpression  -- Adicionar ParserError
+        Right (_, _, Nothing) -> Left $ ParserError EmptyExpression

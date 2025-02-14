@@ -22,7 +22,7 @@ instance Monad m => Parser AppParser m where
 buildApplication :: Monad m =>
     Expression ->
     [String] ->
-    ExprParser ->  -- Parser de expressões passado como parâmetro
+    ExprParser ->
     m Result
 buildApplication acc [] _ = return $ Right (acc, [])
 buildApplication acc (")":rest) _ = return $ Right (acc, ")":rest)

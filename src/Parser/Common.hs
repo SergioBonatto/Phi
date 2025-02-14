@@ -12,8 +12,8 @@ import Data.Either()
 expr :: ExprParser
 expr [] = Left (UnexpectedEndOfInput "Expected expression")
 expr (tok:toks)
-    | tok == "λ" = lambda toks expr  -- Passa expr como parâmetro
-    | tok == "(" = runParser (ParenExprParser expr) (tok:toks)  -- Removido either Left id
+    | tok == "λ" = lambda toks expr
+    | tok == "(" = runParser (ParenExprParser expr) (tok:toks)
     | tok == ")" || tok == "." || tok == "=" =
         Left (UnexpectedToken tok "Expected expression")
     | otherwise = Right (Var tok, toks)

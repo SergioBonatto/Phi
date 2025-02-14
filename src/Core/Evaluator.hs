@@ -14,7 +14,6 @@ import EvaluateStep (evaluateStep)
 import Types (InterpreterConfig(..), EvalTrace(..), MemoTable, EvalResult)
 import Data.Time (getCurrentTime)
 
--- Aliases de tipo para clareza
 type MemoKey = (Expression, Set String, Env)
 type MemoValue = (Expression, Int, [EvalTrace])
 type EvaluatorResult = (Expression, Int, [EvalTrace], MemoTable)
