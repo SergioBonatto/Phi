@@ -27,8 +27,10 @@ main = do
 
            let config = InterpreterConfig {
                maxSteps = stepLimit,
-               debug    = showDebug,
-               tracing  = showTrace
+               debug = showDebug,
+               tracing = showTrace,
+               extensions = Set.empty,    -- Adicionado campo extensions
+               memoization = False        -- Adicionado campo memoization
            }
 
            code <- readFile filePath

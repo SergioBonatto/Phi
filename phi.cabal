@@ -29,6 +29,7 @@ library
       EvaluateStep
       Evaluator
       Expression
+      Logger
       Substitution
       App
       Combinators

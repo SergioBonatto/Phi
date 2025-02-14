@@ -1,21 +1,33 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module App (AppParser(..)) where
 
 import Expression (Expression(..))
-import Types (Result, Parser(..), Error(..))
+import Types (Parser(..), ParserError(..))
 import Var (VarParser(..))
 
 data AppParser = AppParser
 
-instance Parser AppParser where
+instance Monad m => Parser AppParser m where
     parse _ tokens = case tokens of
-        [] -> Left UnexpectedEndOfInput
+        [] -> return $ Left (UnexpectedEndOfInput "Expected expression")
         _  -> do
-            (firstExpr, remainingTokens) <- parse VarParser tokens
-            buildApplication firstExpr remainingTokens
+            parsed <- parse VarParser tokens
+            case parsed of
+                Left err -> return $ Left err
+                Right (firstExpr, remainingTokens) ->
+                    buildApplication firstExpr remainingTokens
 
-buildApplication :: Expression -> [String] -> Result
-buildApplication acc [] = Right (acc, [])
-buildApplication acc (")":rest) = Right (acc, ")":rest)
+    -- Implementação padrão do parseWithContext
+    parseWithContext p tokens _ = parse p tokens
+
+buildApplication :: Monad m => Expression -> [String] -> m (Either ParserError (Expression, [String]))
+buildApplication acc [] = return $ Right (acc, [])
+buildApplication acc (")":rest) = return $ Right (acc, ")":rest)
 buildApplication acc tokens = do
-    (nextExpr, remaining) <- parse VarParser tokens
-    buildApplication (App acc nextExpr) remaining
+    parsed <- parse VarParser tokens
+    case parsed of
+        Left err -> return $ Left err
+        Right (nextExpr, remaining) ->
+            buildApplication (App acc nextExpr) remaining
