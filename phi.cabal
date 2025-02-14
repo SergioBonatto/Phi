@@ -37,6 +37,7 @@ library
       Definition
       Error
       Expr
+      ExprTypes
       Lambda
       ParenExpr
       Parser
