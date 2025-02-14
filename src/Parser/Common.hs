@@ -7,7 +7,7 @@ import Error (ParserError(..))
 import Types (ExprParser, Parser(..), Result)
 import ParenExpr (ParenExprParser(..))
 import Data.Functor.Identity (Identity(..))
-import qualified Data.Either as E
+import Data.Either()
 
 expr :: ExprParser
 expr [] = Left (UnexpectedEndOfInput "Expected expression")
