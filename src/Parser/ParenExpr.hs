@@ -5,11 +5,10 @@ module ParenExpr (ParenExprParser(..)) where
 
 import Types (Parser(..), Result)
 import Error (ParserError(..))
-import Expression (Expression(..))
 import App (AppParser(..))
 import ExprTypes (ParserFunction)
 
-data ParenExprParser = ParenExprParser ParserFunction
+newtype ParenExprParser = ParenExprParser ParserFunction
 
 instance Monad m => Parser ParenExprParser m where
     parse (ParenExprParser exprParser) tokens = case tokens of

@@ -7,7 +7,7 @@ import Expression (Expression(..))
 import Types (Parser(..), Result, ExprParser)
 import Var (VarParser(..))
 
-data AppParser = AppParser ExprParser
+newtype AppParser = AppParser ExprParser
 
 instance Monad m => Parser AppParser m where
     parse (AppParser exprParser) tokens = do

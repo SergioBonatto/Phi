@@ -4,7 +4,7 @@
 module Var (VarParser(..)) where
 
 import Expression (Expression(..))
-import Types (Parser(..), Result, ParserError(..))
+import Types (Parser(..), ParserError(..))
 
 data VarParser = VarParser
 

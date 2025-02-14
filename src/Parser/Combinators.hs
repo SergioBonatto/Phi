@@ -6,7 +6,7 @@ module Combinators (
 
 import Expression (Expression)
 import Types (Result, ExprParser, ParserError(..))
-import qualified Data.Map as Map
+import Data.Map()
 
 sequenceParsers :: (Expression -> Expression -> Expression)
                 -> Result
