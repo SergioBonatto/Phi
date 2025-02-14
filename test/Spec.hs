@@ -16,7 +16,9 @@ testConfig :: InterpreterConfig
 testConfig = InterpreterConfig {
     maxSteps = 1000,
     debug = False,
-    tracing = False
+    tracing = False,
+    extensions = Set.empty,
+    memoization = False
 }
 
 allTests :: Test

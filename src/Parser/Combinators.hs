@@ -5,10 +5,13 @@ module Combinators (
 ) where
 
 import Expression (Expression)
-import Types (Result, ExprParser)
-import Error (Error(..))
+import Types (Result, ExprParser, ParserError(..))
+import Data.Map()
 
-sequenceParsers :: (Expression -> Expression -> Expression) -> Result -> Result -> Result
+sequenceParsers :: (Expression -> Expression -> Expression)
+                -> Result
+                -> Result
+                -> Result
 sequenceParsers combine p1 p2 = case p1 of
     Left err -> Left err
     Right (expr1, rest1) -> case p2 of
@@ -16,11 +19,14 @@ sequenceParsers combine p1 p2 = case p1 of
         Right (expr2, rest2) -> Right (combine expr1 expr2, rest2)
 
 choiceParsers :: [Result] -> Result
-choiceParsers [] = Left UnexpectedEndOfInput
+choiceParsers [] = Left (UnexpectedEndOfInput "Sem mais opções de parse")
 choiceParsers (p:ps) = case p of
     Right result -> Right result
     Left _ -> choiceParsers ps
 
 tokenParser :: String -> ExprParser
-tokenParser expected (tok:rest) | tok == expected = Right (undefined, rest)
-tokenParser expected _ = Left (UnexpectedToken expected)
+tokenParser expected (tok:rest)
+    | tok == expected = Right (undefined, rest)
+    | otherwise = Left (UnexpectedToken expected tok)
+tokenParser expected [] =
+    Left (UnexpectedEndOfInput $ "Esperava '" ++ expected ++ "'")

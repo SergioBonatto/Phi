@@ -1,21 +1,40 @@
-module App (AppParser(..)) where
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+
+module App (AppParser(..), buildApplication) where
 
 import Expression (Expression(..))
-import Types (Result, Parser(..), Error(..))
+import Types (Parser(..), Result, ExprParser)
 import Var (VarParser(..))
 
-data AppParser = AppParser
+newtype AppParser = AppParser ExprParser
 
-instance Parser AppParser where
-    parse _ tokens = case tokens of
-        [] -> Left UnexpectedEndOfInput
-        _  -> do
-            (firstExpr, remainingTokens) <- parse VarParser tokens
-            buildApplication firstExpr remainingTokens
+instance Monad m => Parser AppParser m where
+    parse (AppParser exprParser) tokens = do
+        result <- parse VarParser tokens
+        case result of
+            Left err -> return $ Left err
+            Right (firstExpr, remainingTokens) ->
+                buildApplication firstExpr remainingTokens exprParser
 
-buildApplication :: Expression -> [String] -> Result
-buildApplication acc [] = Right (acc, [])
-buildApplication acc (")":rest) = Right (acc, ")":rest)
-buildApplication acc tokens = do
-    (nextExpr, remaining) <- parse VarParser tokens
-    buildApplication (App acc nextExpr) remaining
+    parseWithContext p tokens _ = parse p tokens
+
+buildApplication :: Monad m =>
+    Expression ->
+    [String] ->
+    ExprParser ->
+    m Result
+buildApplication acc [] _ = return $ Right (acc, [])
+buildApplication acc (")":rest) _ = return $ Right (acc, ")":rest)
+buildApplication acc ("(":tokens) exprParser = do
+    case exprParser tokens of
+        Left err -> return $ Left err
+        Right (nextExpr, remaining) ->
+            buildApplication (App acc nextExpr) remaining exprParser
+buildApplication acc (tok:tokens) exprParser
+    | tok `elem` ["λ", ".", "="] = return $ Right (acc, tok:tokens)
+    | otherwise = do
+        case exprParser (tok:tokens) of
+            Left err -> return $ Left err
+            Right (nextExpr, remaining) ->
+                buildApplication (App acc nextExpr) remaining exprParser

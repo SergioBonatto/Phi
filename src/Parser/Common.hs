@@ -1,24 +1,28 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Common (expr) where
 
 import Expression (Expression(..))
-import Error (Error(..))
-import Types (ExprParser, Parser(..))
+import Error (ParserError(..))
+import Types (ExprParser, Parser(..), Result)
 import ParenExpr (ParenExprParser(..))
+import Data.Functor.Identity (Identity(..))
+import Data.Either()
 
 expr :: ExprParser
-expr [] = Left UnexpectedEndOfInput
+expr [] = Left (UnexpectedEndOfInput "Expected expression")
 expr (tok:toks)
-    | tok == "λ" = lambda toks
-    | tok == "(" = parenExpr toks
+    | tok == "λ" = lambda toks expr
+    | tok == "(" = runParser (ParenExprParser expr) (tok:toks)
     | tok == ")" || tok == "." || tok == "=" =
-        Left $ UnexpectedToken tok
+        Left (UnexpectedToken tok "Expected expression")
     | otherwise = Right (Var tok, toks)
 
-lambda :: ExprParser
-lambda (var:".":rest) = do
-    (body, remainingTokens) <- expr rest
+lambda :: [String] -> ExprParser -> Result
+lambda (var:".":rest) exprParser = do
+    (body, remainingTokens) <- exprParser rest
     Right (Lam var body, remainingTokens)
-lambda _ = Left InvalidLambdaSyntax
+lambda _ _ = Left InvalidLambdaSyntax
 
-parenExpr :: ExprParser
-parenExpr = parse ParenExprParser
+runParser :: Parser p Identity => p -> [String] -> Result
+runParser p tokens = runIdentity $ parse p tokens
