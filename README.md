@@ -1,4 +1,4 @@
-# Phi - A Pure Lambda Calculus Interpreter
+# Phi - A Pure Lambda Calculus Interpreter (WIP)
 
 Phi is a sophisticated interpreter for pure lambda calculus, implemented in Haskell. It provides an elegant and powerful environment for exploring lambda calculus expressions, making it ideal for educational purposes and theoretical computer science research.
 
