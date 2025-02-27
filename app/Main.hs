@@ -10,6 +10,8 @@ import Evaluator (evaluate)
 import Parser (processCode)
 import Text.Printf (printf)
 import Types (InterpreterConfig(..), EvalTrace(..))
+import Data.Maybe (fromMaybe)
+
 
 main :: IO ()
 main = do
@@ -58,8 +60,7 @@ main = do
                            when showTrace $ do
                                putStrLn "=================================================="
                                putStrLn "Evaluation trace:"
-                               mapM_ (\t -> printf "[%d] %s: %s\n" (step t) (maybe "" id (redex t)) (show (expr t))) traces
-
+                                mapM_ (\t -> printf "[%d] %s: %s\n" (step t) (fromMaybe "" (redex t)) (show (expr t))) traces
                            when showContext $ do
                                putStrLn "=================================================="
                                putStrLn "Environment:"
