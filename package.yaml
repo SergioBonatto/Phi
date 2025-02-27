@@ -22,6 +22,8 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - containers
+- mtl >= 2.2.2
+- text >= 2.0
 - time
 - HUnit
 
