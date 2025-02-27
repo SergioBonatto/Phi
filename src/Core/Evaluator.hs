@@ -11,7 +11,7 @@ import Error (EvalError(..))
 import Expression (Expression(..))
 import Environment (Env)
 
--- Estado da avaliação com trace
+-- Evaluation state with trace
 data EvalState = EvalState
     { envState  :: Env
     , stepCount :: Int
@@ -20,51 +20,51 @@ data EvalState = EvalState
 
 type EvalM a = ExceptT EvalError (State EvalState) a
 
--- Incrementa o contador de passos
+-- Increments the step counter
 incrementStep :: EvalM ()
 incrementStep = modify $ \s -> s { stepCount = stepCount s + 1 }
 
--- Versão corrigida para usar o construtor T.EvalTrace corretamente
+-- Corrected version to use the T.EvalTrace constructor properly
 addTrace :: String -> Expression -> EvalM ()
 addTrace msg expr = do
     steps <- gets stepCount
     let traceMsg = Just (msg ++ " (" ++ show expr ++ ")")
     modify $ \s -> s { evalTrace = T.EvalTrace steps expr traceMsg 0 Nothing : evalTrace s }
 
--- Função de substituição: substitui a variável 'x' pela expressão 'value' em 'expr'
+-- Substitution function: replaces variable 'x' with expression 'value' in 'expr'
 substitute :: String -> Expression -> Expression -> Expression
 substitute x value expr = case expr of
     Var y -> if y == x then value else Var y
     Lam y body ->
         if y == x
-        then Lam y body -- Variável ligada, não substitui no corpo
+        then Lam y body -- Bound variable, doesn't substitute in the body
         else Lam y (substitute x value body)
     App f arg -> App (substitute x value f) (substitute x value arg)
 
--- Avalia uma expressão
+-- Evaluates an expression
 eval :: Expression -> EvalM Expression
 eval expr = do
     incrementStep
-    addTrace "Avaliando" expr
+    addTrace "Evaluating" expr
     case expr of
         Var x -> do
             env <- gets envState
             case Map.lookup x env of
-                Just e  -> eval e  -- Avaliar a variável encontrada no ambiente
+                Just e  -> eval e  -- Evaluate the variable found in the environment
                 Nothing -> throwError $ UnboundVariable x
         Lam x body -> return $ Lam x body
         App f arg -> do
             f' <- eval f
-            arg' <- eval arg  -- Avaliar o argumento
+            arg' <- eval arg  -- Evaluate the argument
             case f' of
                 Lam x body -> do
-                    -- Substituição léxica em vez de usar o ambiente
+                    -- Lexical substitution instead of using the environment
                     let newBody = substitute x arg' body
-                    addTrace ("Substituindo " ++ x) newBody
+                    addTrace ("Substituting " ++ x) newBody
                     eval newBody
                 _ -> throwError $ TypeError "Expected a function in application"
 
--- Nova função evaluate que recebe o ambiente e o conjunto de definições usadas
+-- New evaluate function that receives the environment and the set of definitions used
 evaluate :: T.InterpreterConfig -> Expression -> Env -> Set.Set String -> (Expression, Int, [T.EvalTrace])
 evaluate config expr env _ =
     let initialState = EvalState env 0 []

@@ -48,11 +48,11 @@ data LogEntry = LogEntry {
 } deriving (Show)
 
 data EvalTrace = EvalTrace {
-    step :: Int,            -- Número do passo
-    expr :: Expression,     -- Expressão avaliada
-    redex :: Maybe String,  -- Descrição opcional do redex
-    memoryUsage :: Int,     -- Uso de memória
-    optimization :: Maybe String  -- Otimização aplicada (se houver)
+    step :: Int,
+    expr :: Expression,
+    redex :: Maybe String,
+    memoryUsage :: Int,
+    optimization :: Maybe String
 } deriving (Show)
 
 type MemoKey = (Expression, Set.Set String, Map.Map String Expression)

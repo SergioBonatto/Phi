@@ -42,7 +42,6 @@ main = do
                    print err
                    exitFailure
                Right (lastExpr, env) ->
-                   -- Corrigido a indentação e estrutura dos blocos do
                    case evaluate config lastExpr env Set.empty of
                        (result, steps, traces) -> do
                            endTime <- getCurrentTime
