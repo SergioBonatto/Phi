@@ -85,11 +85,12 @@ evaluationTests = TestList [
         in result ~?= Lam "y" (Var "y"),
 
     "Basic substitution with bound variable" ~:
-        let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Lam "y" (Var "y"))
-            env = Map.empty
-            usedDefs = Set.empty
-            (result, _, _) = evaluate testConfig testExpr env usedDefs
-        in result ~?= App (Lam "y" (Var "y")) (Lam "y" (Var "y")),
+    let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Lam "y" (Var "y"))
+        env = Map.empty
+        usedDefs = Set.empty
+        (result, _, _) = evaluate testConfig testExpr env usedDefs
+        expected = App (Lam "y" (Var "y")) (Lam "y" (Var "y"))
+    in result ~?= expected
 
     "Multiple beta reduction with bound variables" ~:
         let k = Lam "x" (Lam "y" (Var "x"))
