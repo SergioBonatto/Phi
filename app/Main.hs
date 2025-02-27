@@ -21,15 +21,15 @@ main = do
       (filePath:opts) -> do
            let showStats    = "-s" `elem` opts
                showContext  = "-c" `elem` opts
-               showDebug   = "-d" `elem` opts
-               showTrace   = "-t" `elem` opts
-               stepLimit   = maybe 1000 read $ lookup "-m" $ zip opts (drop 1 opts)
+               showDebug    = "-d" `elem` opts
+               showTrace    = "-t" `elem` opts
+               stepLimit    = maybe 1000 read $ lookup "-m" $ zip opts (drop 1 opts)
 
            let config = InterpreterConfig {
-               maxSteps = stepLimit,
-               debug = showDebug,
-               tracing = showTrace,
-               extensions = Set.empty,
+               maxSteps    = stepLimit,
+               debug       = showDebug,
+               tracing     = showTrace,
+               extensions  = Set.empty,
                memoization = False
            }
 
@@ -41,26 +41,27 @@ main = do
                    putStrLn "Error parsing code:"
                    print err
                    exitFailure
-               Right (lastExpr, env) -> do
-                   let (result, steps, traces) = evaluate config lastExpr env Set.empty
+               Right (lastExpr, env) ->
+                   -- Corrigido a indentação e estrutura dos blocos do
+                   case evaluate config lastExpr env Set.empty of
+                       (result, steps, traces) -> do
+                           endTime <- getCurrentTime
+                           let elapsedTime = realToFrac (diffUTCTime endTime startTime) :: Double
 
-                   endTime <- getCurrentTime
-                   let elapsedTime = realToFrac (diffUTCTime endTime startTime) :: Double
+                           putStrLn "Final result:"
+                           putStrLn $ "=> " ++ show result
 
-                   putStrLn "Final result:"
-                   putStrLn $ "=> " ++ show result
+                           when showStats $ do
+                               putStrLn "=================================================="
+                               printf "Execution time: %.6f seconds\n" elapsedTime
+                               printf "Number of reduction steps: %d\n" steps
 
-                   when showStats $ do
-                       putStrLn "=================================================="
-                       printf "Execution time: %.6f seconds\n" elapsedTime
-                       putStrLn $ "Number of reduction steps: " ++ show steps
+                           when showTrace $ do
+                               putStrLn "=================================================="
+                               putStrLn "Evaluation trace:"
+                               mapM_ (\t -> printf "[%d] %s: %s\n" (step t) (maybe "" id (redex t)) (show (expr t))) traces
 
-                   when showTrace $ do
-                       putStrLn "=================================================="
-                       putStrLn "Evaluation trace:"
-                       mapM_ (\t -> printf "Step %d: %s\n" (step t) (show $ expr t)) traces
-
-                   when showContext $ do
-                       putStrLn "=================================================="
-                       putStrLn "Environment:"
-                       mapM_ (\(n,e) -> putStrLn $ n ++ " = " ++ show e) (Map.toList env)
+                           when showContext $ do
+                               putStrLn "=================================================="
+                               putStrLn "Environment:"
+                               mapM_ (\(n,e) -> putStrLn $ n ++ " = " ++ show e) (Map.toList env)
