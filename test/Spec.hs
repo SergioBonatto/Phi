@@ -85,14 +85,14 @@ evaluationTests = TestList [
         in result ~?= Lam "y" (Var "y"),
 
     "Basic substitution with bound variable" ~:
-    let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Lam "y" (Var "y"))
-        env = Map.empty
-        usedDefs = Set.empty
-        (result, _, _) = evaluate testConfig testExpr env usedDefs
-        expected = App (Lam "y" (Var "y")) (Lam "y" (Var "y"))
-    in result ~?= expected
+        let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Lam "y" (Var "y"))
+            env = Map.empty
+            usedDefs = Set.empty
+            (result, _, _) = evaluate testConfig testExpr env usedDefs
+            expected = App (Lam "y" (Var "y")) (Lam "y" (Var "y"))
+        in result ~?= expected,  -- Note a vírgula aqui
 
-    "Multiple beta reduction with bound variables" ~:
+    "Multiple beta reduction with bound variables" ~:  -- Removida a indentação incorreta
         let k = Lam "x" (Lam "y" (Var "x"))
             testExpr = App (App k (Lam "a" (Var "a"))) (Lam "b" (Var "b"))
             env = Map.empty
@@ -106,7 +106,7 @@ evaluationTests = TestList [
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
         in result ~?= Lam "y" (App (Lam "z" (Var "z")) (Var "y"))
-  ]
+    ]
 
 definitionTests :: Test
 definitionTests = TestList [
