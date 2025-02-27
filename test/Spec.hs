@@ -89,10 +89,10 @@ evaluationTests = TestList [
             env = Map.empty
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
-            expected = App (Lam "y" (Var "y")) (Lam "y" (Var "y"))
-        in result ~?= expected,  -- Note a vírgula aqui
+            expected = Lam "y" (Var "y")  -- Corrigido para a função identidade
+        in result ~?= expected,
 
-    "Multiple beta reduction with bound variables" ~:  -- Removida a indentação incorreta
+    "Multiple beta reduction with bound variables" ~:
         let k = Lam "x" (Lam "y" (Var "x"))
             testExpr = App (App k (Lam "a" (Var "a"))) (Lam "b" (Var "b"))
             env = Map.empty
