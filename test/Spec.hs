@@ -76,33 +76,33 @@ parsingTests = TestList [
 
 evaluationTests :: Test
 evaluationTests = TestList [
-    "Identity function" ~:
-        let testExpr = App (Lam "x" (Var "x")) (Var "y")
-            env = Map.empty
+    "Identity function with bound variable" ~:
+        let testExpr = App (Lam "x" (Var "x")) (Var "z")
+            env = Map.fromList [("z", Var "test")]
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
-        in result ~?= Var "y",
+        in result ~?= Var "test",
 
-    "Basic substitution" ~:
-        let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Var "y")
-            env = Map.empty
+    "Basic substitution with bound variable" ~:
+        let testExpr = App (Lam "x" (App (Var "x") (Var "x"))) (Var "z")
+            env = Map.fromList [("z", Var "test")]
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
-        in result ~?= App (Var "y") (Var "y"),
+        in result ~?= App (Var "test") (Var "test"),
 
-    "Multiple beta reduction" ~:
+    "Multiple beta reduction with bound variables" ~:
         let testExpr = App (App (Lam "x" (Lam "y" (Var "x"))) (Var "a")) (Var "b")
-            env = Map.empty
+            env = Map.fromList [("a", Var "value-a"), ("b", Var "value-b")]
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
-        in result ~?= Var "a",
+        in result ~?= Var "value-a",
 
-    "Nested lambda evaluation" ~:
+    "Nested lambda evaluation with bound variable" ~:
         let testExpr = App (Lam "x" (Lam "y" (App (Var "x") (Var "y")))) (Var "z")
-            env = Map.empty
+            env = Map.fromList [("z", Var "test")]
             usedDefs = Set.empty
             (result, _, _) = evaluate testConfig testExpr env usedDefs
-        in result ~?= Lam "y" (App (Var "z") (Var "y"))
+        in result ~?= Lam "y" (App (Var "test") (Var "y"))
   ]
 
 definitionTests :: Test
@@ -122,10 +122,12 @@ definitionTests = TestList [
         ~?= True,
 
     "Definition with application" ~:
-        case processCode "let apply = λf. λx. (f x)\nlet id = λx. x\n(apply id y)" of
+        case processCode "let apply = λf. λx. (f x)\nlet id = λx. x\n(apply id w)" of
             Right (parsedExpr, env) ->
-                let (result, _, _) = evaluate testConfig parsedExpr env Set.empty
-                in result == Var "y" &&
+                -- Garantimos que w está no ambiente para evitar o erro de variável não definida
+                let env' = Map.insert "w" (Var "test-value") env
+                    (result, _, _) = evaluate testConfig parsedExpr env' Set.empty
+                in result == Var "test-value" &&
                    Map.lookup "apply" env == Just (Lam "f" (Lam "x" (App (Var "f") (Var "x")))) &&
                    Map.lookup "id" env == Just (Lam "x" (Var "x"))
             _ -> False
