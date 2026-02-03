@@ -1,0 +1,29 @@
+-- Advanced example demonstrating the unified Phi interpreter
+-- This shows church encodings and recursive functions
+
+-- Boolean operations
+let true  = λt.λf.t
+let false = λt.λf.f
+let and   = λp.λq.p q false
+let or    = λp.λq.p true q
+let not   = λp.p false true
+
+-- Natural numbers (Church numerals)
+let zero = λf.λx.x
+let one  = λf.λx.f x
+let two  = λf.λx.f (f x)
+let succ = λn.λf.λx.f (n f x)
+
+-- Arithmetic
+let add = λm.λn.λf.λx.m f (n f x)
+let mul = λm.λn.λf.m (n f)
+
+-- Lists (using Scott encoding)
+let nil  = λc.λn.n
+let cons = λh.λt.λc.λn.c h t
+let head = λl.l (λh.λt.h) false
+let tail = λl.l (λh.λt.t) nil
+
+-- Test expression: (add one two)
+-- (add one two)
+(and true false)

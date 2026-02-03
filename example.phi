@@ -1,11 +1,10 @@
 -- Basic boolean definitions
-let true  = λt.λf.t   -- returns first argument
-let false = λt.λf.f   -- returns second argument
-let neg   = λb. (b false true)  -- negation
-
-{- List implementation
-   using Scott encoding -}
-let cons = λh.λt.λc.λn. (c h (t c n))
-let nil  = λc.λn.n
+let true  = λt.λf.t              -- returns first argument
+let false = λt.λf.f              -- returns second argument
+let neg   = λb. (b false true)   -- negation
+let and   = λa.λb. (a b false)   -- logical AND
+let or    = λa.λb. (a true b)    -- logical OR
+let if    = λc.λt.λf. (c t f)    -- conditional
 
 (neg true)  -- should return false
+

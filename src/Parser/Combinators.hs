@@ -24,7 +24,7 @@ choiceParsers (p:ps) = case p of
     Right result -> Right result
     Left _ -> choiceParsers ps
 
-tokenParser :: String -> ExprParser
+tokenParser :: String -> xprParser
 tokenParser expected (tok:rest)
     | tok == expected = Right (undefined, rest)
     | otherwise = Left (UnexpectedToken expected tok)
